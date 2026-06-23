@@ -1,26 +1,33 @@
-"""Application configuration."""
+"""Application configuration via pydantic-settings."""
 
-import os
 from functools import lru_cache
 
-from dotenv import load_dotenv
-
-load_dotenv()
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings:
-    PROJECT_NAME: str = "Smart Railway Crossing Anomaly Prevention System"
-    PROJECT_SHORT_NAME: str = "Railway Crossing Protection System"
-    API_VERSION: str = os.getenv("API_VERSION", "0.1.0")
-    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
-    CORS_ORIGINS: list[str] = [
-        origin.strip()
-        for origin in os.getenv(
-            "CORS_ORIGINS",
-            "http://localhost:5173,http://127.0.0.1:5173",
-        ).split(",")
-        if origin.strip()
-    ]
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    PROJECT_NAME: str = "Risk-Adaptive Railway Crossing Protection System"
+    PROJECT_SHORT_NAME: str = "Smart Railway Crossing Anomaly Prevention System"
+    APP_VERSION: str = "0.1.0"
+    ENVIRONMENT: str = "development"
+    BACKEND_CORS_ORIGINS: str = (
+        "http://localhost:5173,http://127.0.0.1:5173"
+    )
+    API_PREFIX: str = "/api"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.BACKEND_CORS_ORIGINS.split(",")
+            if origin.strip()
+        ]
 
 
 @lru_cache

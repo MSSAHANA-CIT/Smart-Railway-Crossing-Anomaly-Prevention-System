@@ -38,14 +38,25 @@
 | Arduino IDE / PlatformIO | Firmware (Phase 3–4) |
 | Git + GitHub | Version control |
 
+## Phase S1 — Backend Foundation (same day)
+
+- Restructured backend into clean architecture (`api/`, `core/`, `schemas/`, etc.)
+- Migrated configuration to `pydantic-settings` with `.env` support
+- Added structured logging with timestamp, level, and message format
+- Implemented health routes: `GET /`, `GET /api/health`, `GET /api/version`
+- Configured CORS middleware for Vite frontend origins
+- Added FastAPI lifespan startup/shutdown logging
+- Updated `requirements.txt`, `.env.example`, `backend/README.md`
+- Created `docs/phase-documentation/phase-s1-backend-foundation.md`
+
 ## Current Status
 
-Phase 0 foundation complete. Backend and frontend starters are runnable locally. No sensors, AI, or database connected yet.
+Phase 0 and Phase S1 complete. Backend foundation is runnable with health endpoints at `/api/health`. Frontend dashboard starter remains independent. No sensors, AI, database, or authentication connected yet.
 
 ## Next Steps
 
-1. Initialize Git repository and push to GitHub
-2. Begin Phase 1: PostgreSQL connection, SQLAlchemy models, Alembic migrations
-3. Add JWT authentication stubs
-4. Connect frontend to backend health endpoint
+1. Push Phase S1 changes to GitHub
+2. Begin Phase S2: PostgreSQL connection, SQLAlchemy models, Alembic migrations
+3. Add JWT authentication stubs (Phase S3+)
+4. Connect frontend dashboard to `/api/health` endpoint
 5. Order hardware components per `hardware/purchase-checklist.md`
