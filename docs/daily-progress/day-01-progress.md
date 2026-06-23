@@ -49,14 +49,23 @@
 - Updated `requirements.txt`, `.env.example`, `backend/README.md`
 - Created `docs/phase-documentation/phase-s1-backend-foundation.md`
 
+## Phase S2 — Database Foundation (same day)
+
+- Added `DATABASE_URL` configuration and SQLAlchemy engine/session (`app/db/session.py`)
+- Created SQLAlchemy `Base` and six core models (users, devices, crossings, sensor_types, system_logs, audit_logs)
+- Initialized Alembic with initial migration `create_core_database_tables`
+- Extended `/api/health` with database status; added `GET /api/db-health`
+- Built idempotent sensor type seed script (`scripts/seed_database.py`)
+- Updated `backend/README.md`, `CHANGELOG.md`, and architecture documentation
+
 ## Current Status
 
-Phase 0 and Phase S1 complete. Backend foundation is runnable with health endpoints at `/api/health`. Frontend dashboard starter remains independent. No sensors, AI, database, or authentication connected yet.
+Phase 0, S1, and S2 complete. Backend runs with PostgreSQL database layer, Alembic migrations, and database health endpoints. Authentication, sensor readings, and risk engine APIs are not yet connected.
 
 ## Next Steps
 
-1. Push Phase S1 changes to GitHub
-2. Begin Phase S2: PostgreSQL connection, SQLAlchemy models, Alembic migrations
-3. Add JWT authentication stubs (Phase S3+)
-4. Connect frontend dashboard to `/api/health` endpoint
+1. Push Phase S2 changes to GitHub
+2. Begin Phase S3: JWT authentication and user password management
+3. Connect frontend dashboard to `/api/health` and `/api/db-health`
+4. Add sensor reading tables and ingestion APIs (Phase S4+)
 5. Order hardware components per `hardware/purchase-checklist.md`

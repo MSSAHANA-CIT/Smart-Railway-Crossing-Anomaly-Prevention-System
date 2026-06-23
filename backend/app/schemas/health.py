@@ -5,9 +5,16 @@ from pydantic import BaseModel
 
 class HealthResponse(BaseModel):
     status: str
+    database: str
     service: str
     version: str
     environment: str
+    message: str
+
+
+class DbHealthResponse(BaseModel):
+    database: str
+    status: str
     message: str
 
 

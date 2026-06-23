@@ -13,7 +13,6 @@ setup_logging()
 logger = get_logger(__name__)
 settings = get_settings()
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(
@@ -31,8 +30,9 @@ app = FastAPI(
     version=settings.APP_VERSION,
     description=(
         "Risk-Adaptive Railway Crossing Protection System — "
-        "Phase S1 backend foundation with health checks and configuration. "
-        "Database, sensors, and authentication are planned for future phases."
+        "Phase S2 database foundation with PostgreSQL, SQLAlchemy models, "
+        "and Alembic migrations. Authentication and sensor APIs are planned "
+        "for future phases."
     ),
     lifespan=lifespan,
 )

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-06-23
+
+### Added
+
+- PostgreSQL database foundation with SQLAlchemy, Alembic migrations, core models, database health checks, and sensor type seed foundation.
+- SQLAlchemy models: `users`, `devices`, `crossings`, `sensor_types`, `system_logs`, `audit_logs`.
+- Database session layer (`engine`, `SessionLocal`, `get_db` dependency).
+- Alembic initial migration `create_core_database_tables`.
+- `GET /api/db-health` endpoint for dedicated PostgreSQL status.
+- Extended `GET /api/health` with `database` connected/disconnected status.
+- Idempotent sensor type seed script (`scripts/seed_database.py`).
+- Phase S2 documentation and database architecture plan.
+
 ## [0.1.1] - 2025-06-23
 
 ### Added
