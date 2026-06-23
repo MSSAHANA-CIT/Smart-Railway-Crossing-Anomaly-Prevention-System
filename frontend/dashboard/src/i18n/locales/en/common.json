@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "liveMonitoring": "Live Monitoring",
+    "riskLevel": "Risk Level",
+    "sensorStatus": "Sensor Status",
+    "alerts": "Alerts",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "app": {
+    "title": "Railway Crossing Protection System",
+    "subtitle": "Smart Railway Crossing Anomaly Prevention System",
+    "phaseNote": "Phase 0 — Foundation active. Sensors and AI not yet connected."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "hi": "हिन्दी",
+    "ta": "தமிழ்",
+    "ml": "മലയാളം"
+  },
+  "status": {
+    "safe": "Safe",
+    "warning": "Warning",
+    "critical": "Critical",
+    "emergency": "Emergency"
+  },
+  "cards": {
+    "safetyStatus": "Safety Status",
+    "currentRisk": "Current Risk Level",
+    "systemHealth": "System Health",
+    "alertPreview": "Alert Preview",
+    "safetyDescription": "Crossing zone is clear. No active threats detected.",
+    "riskDescription": "Risk assessment pending sensor integration.",
+    "healthDescription": "Backend and dashboard foundation operational.",
+    "alertDescription": "No active alerts. Monitoring will begin after Phase 1 integration.",
+    "operational": "Operational",
+    "standby": "Standby",
+    "noAlerts": "No alerts"
+  },
+  "common": {
+    "version": "Version 0.1.0",
+    "lastUpdated": "Last updated"
+  }
+}
