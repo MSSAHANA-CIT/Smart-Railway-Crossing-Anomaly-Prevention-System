@@ -33,8 +33,8 @@ async def root() -> RootResponse:
         version=settings.APP_VERSION,
         status="active",
         message=(
-            "Backend foundation active with PostgreSQL database layer. "
-            "Authentication and sensor APIs are planned for future phases."
+            "Backend foundation active with IAM authentication. "
+            "Use /api/auth/login to obtain a JWT access token."
         ),
     )
 

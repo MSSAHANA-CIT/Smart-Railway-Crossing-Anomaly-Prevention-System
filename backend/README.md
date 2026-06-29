@@ -1,6 +1,6 @@
 # Backend — Smart Railway Crossing Anomaly Prevention System
 
-FastAPI backend for the **Risk-Adaptive Railway Crossing Protection System**. Phase S2 adds PostgreSQL connectivity, SQLAlchemy models, Alembic migrations, database health checks, and sensor type seeding.
+FastAPI backend for the **Risk-Adaptive Railway Crossing Protection System**. Phase S3 adds Identity and Access Management (IAM) with JWT authentication, password hashing, role-based access control, protected routes, and audit logging.
 
 ## Tech Stack
 
@@ -14,6 +14,9 @@ FastAPI backend for the **Risk-Adaptive Railway Crossing Protection System**. Ph
 | SQLAlchemy 2.x | ORM and database models |
 | Alembic | Schema migrations |
 | psycopg2-binary | PostgreSQL driver |
+| python-jose | JWT token creation and validation |
+| passlib + bcrypt | Password hashing |
+| email-validator | Email field validation |
 | PostgreSQL | Primary database |
 
 ## Folder Structure
@@ -21,29 +24,35 @@ FastAPI backend for the **Risk-Adaptive Railway Crossing Protection System**. Ph
 ```
 backend/
 ├── alembic/
-│   ├── env.py                 # Alembic environment (reads DATABASE_URL)
-│   └── versions/              # Migration scripts
-├── alembic.ini
+│   ├── env.py
+│   └── versions/
 ├── app/
-│   ├── api/routes/health.py   # Root, health, db-health, version routes
+│   ├── api/
+│   │   ├── dependencies.py      # get_current_user, require_roles
+│   │   └── routes/
+│   │       ├── auth.py          # Login, /me, verify-token
+│   │       ├── health.py
+│   │       └── users.py         # User CRUD and enable/disable
 │   ├── core/
-│   │   ├── config.py          # pydantic-settings configuration
-│   │   └── logging.py         # Structured logging setup
+│   │   ├── config.py
+│   │   ├── logging.py
+│   │   └── security.py          # Password hashing and JWT
 │   ├── db/
-│   │   ├── base.py            # SQLAlchemy DeclarativeBase
-│   │   ├── session.py         # Engine, SessionLocal, get_db
-│   │   ├── init_db.py         # Connection test helper
-│   │   └── seed.py            # Sensor type seed data
-│   ├── models/                # SQLAlchemy models
-│   ├── schemas/health.py      # Pydantic response schemas
-│   ├── services/              # Business logic (future phases)
-│   ├── utils/                 # Shared helpers (future phases)
-│   └── main.py                # Application entry point
+│   ├── models/
+│   │   ├── user.py
+│   │   └── audit_log.py
+│   ├── schemas/
+│   │   ├── auth.py
+│   │   └── user.py
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   ├── user_service.py
+│   │   └── audit_service.py
+│   └── main.py
 ├── scripts/
-│   └── seed_database.py       # CLI seed script
-├── requirements.txt
-├── .env.example
-└── README.md
+│   ├── create_admin_user.py
+│   └── seed_database.py
+└── requirements.txt
 ```
 
 ## Setup
@@ -56,48 +65,54 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Edit `.env` and set `DATABASE_URL` for your PostgreSQL instance.
+Edit `.env` and set `DATABASE_URL`, `SECRET_KEY`, and other values.
 
-Default (Linux/Docker-style install):
+## IAM Overview
 
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/smart_railway_crossing_db
-```
+Phase S3 provides enterprise-ready authentication for railway employees:
 
-On macOS with Homebrew PostgreSQL, the default superuser is often your system username (no password):
+- **Password security** — bcrypt hashing via passlib; plain-text passwords are never stored
+- **JWT access tokens** — signed with `SECRET_KEY`, include `sub`, `user_id`, `role`, `exp`
+- **Role-based access** — eight roles from `SUPER_ADMIN` to `VIEWER`
+- **User status** — `ACTIVE`, `INACTIVE`, `SUSPENDED`, `PENDING`
+- **Protected routes** — Bearer token required on sensitive endpoints
+- **Audit logging** — login, user creation, profile views, enable/disable, token validation
 
-```env
-DATABASE_URL=postgresql://YOUR_USERNAME@localhost:5432/smart_railway_crossing_db
-```
+## Roles
+
+| Role | Description |
+|------|-------------|
+| `SUPER_ADMIN` | Full system administration |
+| `RAILWAY_ADMIN` | Railway-wide user and system management |
+| `DIVISION_ADMIN` | Division-level administration |
+| `STATION_MASTER` | Station-level operations |
+| `CROSSING_OPERATOR` | Level crossing operator |
+| `MAINTENANCE_ENGINEER` | Field maintenance staff |
+| `SAFETY_INSPECTOR` | Safety inspection personnel |
+| `VIEWER` | Read-only access |
 
 ## Database Setup
 
-Create the PostgreSQL database:
-
 ```bash
 createdb smart_railway_crossing_db
-```
-
-If `createdb` is not on your PATH (Homebrew):
-
-```bash
-/opt/homebrew/opt/postgresql@16/bin/createdb smart_railway_crossing_db
-```
-
-Run Alembic migrations:
-
-```bash
 cd backend
 source venv/bin/activate
-alembic revision --autogenerate -m "create_core_database_tables"   # when models change
 alembic upgrade head
-```
-
-Seed reference sensor types:
-
-```bash
 python scripts/seed_database.py
 ```
+
+## Create First Admin User
+
+When no users exist, create the bootstrap `SUPER_ADMIN`:
+
+```bash
+ADMIN_EMAIL=admin@example.com \
+ADMIN_FULL_NAME="System Admin" \
+ADMIN_PASSWORD="Admin@12345" \
+python scripts/create_admin_user.py
+```
+
+Or set `ADMIN_EMAIL`, `ADMIN_FULL_NAME`, and `ADMIN_PASSWORD` in `.env`.
 
 ## Run
 
@@ -107,47 +122,73 @@ source venv/bin/activate
 uvicorn app.main:app --reload
 ```
 
-The API listens on `http://127.0.0.1:8000` by default.
+API: `http://127.0.0.1:8000`  
+Swagger UI: `http://127.0.0.1:8000/docs`
 
-## Available Endpoints
+## Auth Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/auth/login` | No | Login with email/password; returns JWT |
+| GET | `/api/auth/me` | Bearer | Current logged-in user |
+| POST | `/api/auth/verify-token` | Bearer | Validate token and return user info |
+
+### Test Login
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"Admin@12345"}'
+```
+
+### Test Current User
+
+```bash
+curl http://127.0.0.1:8000/api/auth/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+## User Endpoints
+
+| Method | Path | Auth | Allowed Roles |
+|--------|------|------|---------------|
+| POST | `/api/users` | Optional* | Bootstrap or `SUPER_ADMIN` |
+| GET | `/api/users` | Bearer | `SUPER_ADMIN`, `RAILWAY_ADMIN` |
+| GET | `/api/users/{user_id}` | Bearer | Admins or self |
+| PATCH | `/api/users/{user_id}/disable` | Bearer | `SUPER_ADMIN`, `RAILWAY_ADMIN` |
+| PATCH | `/api/users/{user_id}/enable` | Bearer | `SUPER_ADMIN`, `RAILWAY_ADMIN` |
+
+\* `POST /api/users` is open only when the database has zero users (first admin bootstrap).
+
+## Using JWT in Swagger
+
+1. Open `http://127.0.0.1:8000/docs`
+2. Call `POST /api/auth/login` with email and password
+3. Copy the `access_token` from the response
+4. Click **Authorize** (top right)
+5. Enter: `Bearer <paste_access_token_here>`
+6. Call protected endpoints (`/api/auth/me`, `/api/users`, etc.)
+
+## Health Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/` | Project metadata |
-| GET | `/api/health` | Backend + database health (`status`, `database`, `version`, `environment`) |
-| GET | `/api/db-health` | Dedicated database health check |
-| GET | `/api/version` | Version and environment information |
-| GET | `/docs` | Interactive OpenAPI documentation |
-| GET | `/redoc` | ReDoc API documentation |
+| GET | `/api/health` | Backend + database health |
+| GET | `/api/db-health` | Database health check |
+| GET | `/api/version` | Version information |
 
-### Health Check URLs
+## Phase S3 Status
 
-- `http://127.0.0.1:8000/`
-- `http://127.0.0.1:8000/api/health`
-- `http://127.0.0.1:8000/api/db-health`
-- `http://127.0.0.1:8000/docs`
+- JWT authentication with password hashing (bcrypt)
+- User model with IAM fields (`password_hash`, `status`, `last_login_at`, `failed_login_attempts`)
+- Role-based access control on user management routes
+- Audit logging for IAM actions
+- Admin bootstrap script
+- Alembic migration `add_identity_access_management_fields`
 
-## Core Database Tables
-
-| Table | Purpose |
-|-------|---------|
-| `users` | Operator and admin accounts (no password yet — Phase S3) |
-| `devices` | ESP32 controllers, cameras, and field hardware |
-| `crossings` | Railway crossing locations and metadata |
-| `sensor_types` | Reference catalog of supported sensor types |
-| `system_logs` | Operational system events |
-| `audit_logs` | User and system action audit trail |
-
-## Phase S2 Status
-
-- PostgreSQL connection via SQLAlchemy engine and session factory
-- Six core models with Alembic initial migration
-- Database health checks on `/api/health` and `/api/db-health`
-- Idempotent sensor type seed script
-- `get_db` FastAPI dependency ready for future routes
-
-**Not included in Phase S2:** authentication, passwords, sensor readings, risk engine APIs.
+**Not included in Phase S3:** refresh tokens, password reset, frontend login UI, device management, sensor APIs.
 
 ## Next Backend Phase
 
-Phase S3 will add JWT authentication, password hashing, and user management APIs.
+Phase S4 will add device management APIs and sensor data ingestion.

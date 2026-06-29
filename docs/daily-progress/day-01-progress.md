@@ -58,14 +58,27 @@
 - Built idempotent sensor type seed script (`scripts/seed_database.py`)
 - Updated `backend/README.md`, `CHANGELOG.md`, and architecture documentation
 
+## Phase S3 — Identity and Access Management (2025-06-29)
+
+- Added JWT authentication with python-jose and bcrypt password hashing (passlib)
+- Extended `User` model with `password_hash`, `status`, `last_login_at`, `failed_login_attempts`
+- Created security module, auth/user/audit services, and FastAPI dependencies
+- Implemented auth routes: login, `/me`, verify-token
+- Implemented user routes: create, list, get, disable, enable with role-based access
+- Added eight railway roles and four user status values
+- Created Alembic migration `add_identity_access_management_fields`
+- Created `scripts/create_admin_user.py` for bootstrap SUPER_ADMIN
+- Audit logging for USER_CREATED, USER_LOGIN_SUCCESS/FAILED, USER_PROFILE_VIEWED, USER_DISABLED/ENABLED, TOKEN_VALIDATED
+- Updated `backend/README.md`, `CHANGELOG.md` (v0.1.3), and phase S3 documentation
+
 ## Current Status
 
-Phase 0, S1, and S2 complete. Backend runs with PostgreSQL database layer, Alembic migrations, and database health endpoints. Authentication, sensor readings, and risk engine APIs are not yet connected.
+Phase 0, S1, S2, and S3 complete. Backend runs with PostgreSQL, JWT authentication, role-based access control, and audit logging. Device management, sensor APIs, and frontend login are not yet implemented.
 
 ## Next Steps
 
-1. Push Phase S2 changes to GitHub
-2. Begin Phase S3: JWT authentication and user password management
-3. Connect frontend dashboard to `/api/health` and `/api/db-health`
+1. Push Phase S3 changes to GitHub
+2. Begin Phase S4: device management and sensor data ingestion APIs
+3. Connect frontend dashboard to auth endpoints (future frontend phase)
 4. Add sensor reading tables and ingestion APIs (Phase S4+)
 5. Order hardware components per `hardware/purchase-checklist.md`

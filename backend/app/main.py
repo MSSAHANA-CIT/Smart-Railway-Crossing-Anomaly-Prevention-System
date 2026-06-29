@@ -5,7 +5,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes.auth import router as auth_router
 from app.api.routes.health import api_router, root_router
+from app.api.routes.users import router as users_router
 from app.core.config import get_settings
 from app.core.logging import get_logger, setup_logging
 
@@ -30,9 +32,8 @@ app = FastAPI(
     version=settings.APP_VERSION,
     description=(
         "Risk-Adaptive Railway Crossing Protection System — "
-        "Phase S2 database foundation with PostgreSQL, SQLAlchemy models, "
-        "and Alembic migrations. Authentication and sensor APIs are planned "
-        "for future phases."
+        "Phase S3 IAM foundation with JWT authentication, password hashing, "
+        "role-based access control, and audit logging."
     ),
     lifespan=lifespan,
 )
@@ -47,3 +48,5 @@ app.add_middleware(
 
 app.include_router(root_router)
 app.include_router(api_router, prefix=settings.API_PREFIX)
+app.include_router(auth_router, prefix=settings.API_PREFIX)
+app.include_router(users_router, prefix=settings.API_PREFIX)

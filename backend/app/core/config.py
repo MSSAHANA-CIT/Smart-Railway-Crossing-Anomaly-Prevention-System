@@ -26,9 +26,12 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "Risk-Adaptive Railway Crossing Protection System"
     PROJECT_SHORT_NAME: str = "Smart Railway Crossing Anomaly Prevention System"
-    APP_VERSION: str = "0.1.2"
+    APP_VERSION: str = "0.1.3"
     ENVIRONMENT: str = "development"
     DATABASE_URL: str = _default_database_url()
+    SECRET_KEY: str = "change-this-secret-key-before-production"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    ALGORITHM: str = "HS256"
     BACKEND_CORS_ORIGINS: str = (
         "http://localhost:5173,http://127.0.0.1:5173"
     )

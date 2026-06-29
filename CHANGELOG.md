@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2025-06-29
+
+### Added
+
+- Identity and Access Management foundation with password hashing, JWT authentication, user roles, protected routes, and audit logging.
+- Security module (`app/core/security.py`) with bcrypt password hashing and JWT create/decode utilities.
+- Auth service, user service, and audit service for login, user management, and IAM audit trail.
+- Auth routes: `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/verify-token`.
+- User routes: `POST /api/users`, `GET /api/users`, `GET /api/users/{user_id}`, `PATCH /api/users/{user_id}/disable`, `PATCH /api/users/{user_id}/enable`.
+- FastAPI dependencies: `get_current_user`, `require_roles`.
+- User model IAM fields: `password_hash`, `status`, `last_login_at`, `failed_login_attempts`.
+- Eight railway roles and four user status values.
+- Alembic migration `add_identity_access_management_fields`.
+- Admin bootstrap script (`scripts/create_admin_user.py`).
+- Phase S3 documentation.
+
 ## [0.1.2] - 2025-06-23
 
 ### Added
