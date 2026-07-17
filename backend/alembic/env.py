@@ -11,7 +11,13 @@ from app.models import (  # noqa: F401 — register models with metadata
     AuditLog,
     Crossing,
     Device,
+    RailwayCrossing,
+    RailwayDivision,
+    RailwayStation,
+    RailwayZone,
+    Sensor,
     SensorType,
+    StaffAssignment,
     SystemLog,
     User,
 )

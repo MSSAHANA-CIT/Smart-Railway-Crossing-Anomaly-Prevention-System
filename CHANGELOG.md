@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-07-17
+
+### Added
+
+- Railway organization hierarchy (Phase S4): zones, divisions, stations, crossings, devices, sensors, and staff assignments.
+- Crossing management expanded with hierarchy FKs, operational/monitoring status, risk category, and soft activation.
+- Device registration, crossing assignment/unassignment, administrative status, and health status APIs.
+- Sensor registration under devices with sensor type validation and provisional GPIO labels.
+- Staff assignment APIs with typed resources and duplicate-active prevention.
+- Organization hierarchy and crossing overview APIs.
+- Reusable pagination helpers (`page` / `page_size`).
+- Role-protected management APIs using existing Phase S3 roles (baseline checks).
+- Alembic migration `create_railway_organization_and_device_management`.
+- Idempotent demo seed script `scripts/seed_railway_organization.py` (fictional DEMO records only).
+- Pytest API suite for Phase S4 core behaviors (17 tests).
+- Architecture docs for railway organization and device management; Phase S4 documentation.
+
+### Changed
+
+- Application version default set to `0.2.0`.
+- Existing `crossings` and `devices` tables extended additively (no destructive drops).
+
 ## [0.1.4] - 2026-07-17
 
 ### Added

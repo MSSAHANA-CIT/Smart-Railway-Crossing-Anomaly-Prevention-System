@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "Risk-Adaptive Railway Crossing Protection System"
     PROJECT_SHORT_NAME: str = "Smart Railway Crossing Anomaly Prevention System"
-    APP_VERSION: str = "0.1.3"
+    APP_VERSION: str = "0.2.0"
     ENVIRONMENT: str = "development"
     DATABASE_URL: str = _default_database_url()
     SECRET_KEY: str = "change-this-secret-key-before-production"

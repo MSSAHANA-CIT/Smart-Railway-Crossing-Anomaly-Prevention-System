@@ -62,7 +62,7 @@ Firmware lives in **`firmware/`** and follows a **two-controller architecture**:
 
 ## Current Status
 
-**Version 0.1.4 — Phase E0 Embedded Foundation Complete**
+**Version 0.2.0 — Phase S4 Railway Organization and Device Management Complete**
 
 ### Software phases
 
@@ -70,8 +70,16 @@ Firmware lives in **`firmware/`** and follows a **two-controller architecture**:
 - Phase S1 — Backend foundation complete
 - Phase S2 — Database foundation complete
 - Phase S3 — Identity and Access Management complete
-- Phase S4 — Planned / separate
+- Phase S4 — Railway organization and device management complete
 - Phase E0 — Embedded firmware workspace and Arduino docs complete
+
+### Backend (S4)
+
+- Railway zone → division → station → crossing hierarchy APIs
+- Device registration, assignment, and sensor registration
+- Staff assignment foundation
+- Organization hierarchy and crossing overview endpoints
+- Soft deactivation; no claim of live hardware connectivity
 
 ### Embedded / hardware
 

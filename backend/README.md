@@ -1,6 +1,8 @@
 # Backend — Smart Railway Crossing Anomaly Prevention System
 
-FastAPI backend for the **Risk-Adaptive Railway Crossing Protection System**. Phase S3 adds Identity and Access Management (IAM) with JWT authentication, password hashing, role-based access control, protected routes, and audit logging.
+FastAPI backend for the **Risk-Adaptive Railway Crossing Protection System**. Phase S4 adds railway organization hierarchy, device registration, sensor registration, staff assignments, and organization overview APIs on top of the S1–S3 foundation.
+
+**Prototype note:** Demonstration records are fictional. This system is not integrated with Indian Railways production systems.
 
 ## Tech Stack
 
@@ -28,30 +30,34 @@ backend/
 │   └── versions/
 ├── app/
 │   ├── api/
-│   │   ├── dependencies.py      # get_current_user, require_roles
+│   │   ├── dependencies.py
 │   │   └── routes/
-│   │       ├── auth.py          # Login, /me, verify-token
+│   │       ├── auth.py
 │   │       ├── health.py
-│   │       └── users.py         # User CRUD and enable/disable
+│   │       ├── users.py
+│   │       ├── railway_zones.py
+│   │       ├── railway_divisions.py
+│   │       ├── railway_stations.py
+│   │       ├── railway_crossings.py
+│   │       ├── devices.py
+│   │       ├── sensors.py
+│   │       ├── staff_assignments.py
+│   │       └── organization.py
 │   ├── core/
-│   │   ├── config.py
-│   │   ├── logging.py
-│   │   └── security.py          # Password hashing and JWT
 │   ├── db/
 │   ├── models/
-│   │   ├── user.py
-│   │   └── audit_log.py
 │   ├── schemas/
-│   │   ├── auth.py
-│   │   └── user.py
 │   ├── services/
-│   │   ├── auth_service.py
-│   │   ├── user_service.py
-│   │   └── audit_service.py
+│   ├── utils/
+│   │   ├── pagination.py
+│   │   └── validation.py
 │   └── main.py
 ├── scripts/
 │   ├── create_admin_user.py
-│   └── seed_database.py
+│   ├── seed_database.py
+│   └── seed_railway_organization.py
+├── tests/
+│   └── api/
 └── requirements.txt
 ```
 
@@ -99,7 +105,20 @@ cd backend
 source venv/bin/activate
 alembic upgrade head
 python scripts/seed_database.py
+python scripts/seed_railway_organization.py   # optional fictional DEMO hierarchy
 ```
+
+## Phase S4 Models
+
+| Model | Table | Notes |
+|-------|-------|-------|
+| RailwayZone | `railway_zones` | Top-level region |
+| RailwayDivision | `railway_divisions` | Under a zone |
+| RailwayStation | `railway_stations` | Under a division |
+| RailwayCrossing | `crossings` | Expanded Phase S2 table |
+| Device | `devices` | Expanded; optional crossing assignment |
+| Sensor | `sensors` | Under device + sensor type |
+| StaffAssignment | `staff_assignments` | Typed user↔resource link |
 
 ## Create First Admin User
 
@@ -160,14 +179,39 @@ curl http://127.0.0.1:8000/api/auth/me \
 
 \* `POST /api/users` is open only when the database has zero users (first admin bootstrap).
 
-## Using JWT in Swagger
+## Railway Organization Endpoints (S4)
+
+| Area | Base path | Key actions |
+|------|-----------|-------------|
+| Zones | `/api/railway/zones` | create, list, get, patch, activate, deactivate |
+| Divisions | `/api/railway/divisions` | create, list, get, patch, activate, deactivate |
+| Stations | `/api/railway/stations` | create, list, get, patch, activate, deactivate |
+| Crossings | `/api/railway/crossings` | CRUD-like + operational/monitoring status |
+| Hierarchy | `/api/railway/hierarchy` | summary tree (devices/sensors optional) |
+| Overview | `/api/railway/crossings/{id}/overview` | crossing + parents + devices + counts |
+
+## Device and Sensor Endpoints (S4)
+
+| Area | Base path | Key actions |
+|------|-----------|-------------|
+| Devices | `/api/devices` | register, assign, unassign, status, health, sensors |
+| Sensors | `/api/sensors` | register, status, health, activate/deactivate |
+| Staff | `/api/staff-assignments` | create, list, update, activate/deactivate |
+| User assignments | `/api/users/{id}/assignments` | list assignments for a user |
+
+List endpoints use `page` (default 1) and `page_size` (default 20, max 100).
+
+## Using JWT in Swagger (including S4)
 
 1. Open `http://127.0.0.1:8000/docs`
-2. Call `POST /api/auth/login` with email and password
-3. Copy the `access_token` from the response
-4. Click **Authorize** (top right)
-5. Enter: `Bearer <paste_access_token_here>`
-6. Call protected endpoints (`/api/auth/me`, `/api/users`, etc.)
+2. Call `POST /api/auth/login` with SUPER_ADMIN credentials
+3. Copy the `access_token`
+4. Click **Authorize** → `Bearer <token>`
+5. Create a DEMO zone → division → station → crossing
+6. Register two devices (ESP32 controller + ESP32-S3 camera), assign to the crossing
+7. Register sensors; create a staff assignment
+8. Call `/api/railway/crossings/{id}/overview` and `/api/railway/hierarchy`
+9. Deactivate/reactivate a record; confirm audit entries in `audit_logs`
 
 ## Health Endpoints
 
@@ -178,17 +222,22 @@ curl http://127.0.0.1:8000/api/auth/me \
 | GET | `/api/db-health` | Database health check |
 | GET | `/api/version` | Version information |
 
-## Phase S3 Status
+## Tests
 
-- JWT authentication with password hashing (bcrypt)
-- User model with IAM fields (`password_hash`, `status`, `last_login_at`, `failed_login_attempts`)
-- Role-based access control on user management routes
-- Audit logging for IAM actions
-- Admin bootstrap script
-- Alembic migration `add_identity_access_management_fields`
+```bash
+cd backend
+source venv/bin/activate
+pytest tests/ -v
+```
 
-**Not included in Phase S3:** refresh tokens, password reset, frontend login UI, device management, sensor APIs.
+## Phase Status
+
+**S3 (complete):** JWT auth, password hashing, roles, user APIs, IAM audit logging.
+
+**S4 (complete):** Railway hierarchy, device/sensor registration, staff assignments, organization overview, pagination, soft deactivation, role-protected management APIs, Alembic migration `c3d4e5f6a7b8`, demo seed script.
+
+**Not included in S4:** live sensor ingestion, WebSockets, AI risk scoring, FARE, camera uploads, firmware OTA, assignment-scoped multi-tenant authorization, frontend organization screens.
 
 ## Next Backend Phase
 
-Phase S4 will add device management APIs and sensor data ingestion.
+Likely sensor telemetry ingestion and device heartbeat / live monitoring APIs.
