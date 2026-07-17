@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-07-17
+
+### Added
+
+- Embedded development foundation (Phase E0): firmware workspace for ESP32 DevKit V1 and ESP32-S3 AI Camera Board.
+- ESP32 sensor controller starter sketch (Serial identity + non-blocking heartbeat).
+- ESP32-S3 camera controller starter sketch (no camera init; board model pending verification).
+- Shared firmware headers: communication protocol concepts, telemetry data model, safe constants.
+- Arduino IDE setup documentation for macOS and ESP32 board support guide.
+- Exact-board verification checklist and embedded development workflow.
+- Firmware security guidelines and hardware-to-backend integration plan.
+- Beginner examples: basic Serial test and Wi-Fi connection template (placeholders only).
+- Phase E0 documentation and embedded daily progress log.
+- `.gitignore` entries for firmware secrets and build artifacts (`device_config.h`, `*.bin`, `*.elf`, `*.map`).
+
 ## [0.1.3] - 2025-06-29
 
 ### Added

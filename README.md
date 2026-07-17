@@ -24,7 +24,22 @@ Unmanned and poorly monitored railway crossings in India pose serious safety ris
 | ESP32-S3 AI Camera Controller | Visual intrusion detection; false alarm rejection |
 | PostgreSQL Database | Persistent storage for events and configuration |
 
-*Hardware integration is planned for later phases. Phase 0 establishes structure only.*
+*Physical hardware has not been purchased or tested yet. Final GPIO pins are not assigned.*
+
+## Embedded Firmware
+
+Firmware lives in **`firmware/`** and follows a **two-controller architecture**:
+
+| Board | Module folder | Planned role |
+|-------|---------------|--------------|
+| ESP32 DevKit V1 | `firmware/esp32_sensor_controller/` | Multi-sensor reading, LEDs, buzzer, servo, heartbeat |
+| ESP32-S3 AI Camera Board | `firmware/esp32s3_ai_camera/` | Camera capture, visual verification, evidence metadata |
+
+**Hardware status:** No boards tested. ESP32-S3 exact model is **unknown** — pin mapping is pending verification (`docs/embedded/exact-board-verification-checklist.md`).
+
+**Arduino IDE:** Required for compile, upload, and Serial Monitor in the beginner workflow. Cursor is used to write and organize code. See `docs/embedded/arduino-ide-setup-macos.md`.
+
+**Do not assume** the camera board is ESP32-S3-EYE, XIAO Sense, Waveshare, Freenove, ESP32-S3 CAM, or any other specific product until evidence is collected.
 
 ## Software Overview
 
@@ -32,7 +47,7 @@ Unmanned and poorly monitored railway crossings in India pose serious safety ris
 |-------|-------|
 | Backend | Python, FastAPI, SQLAlchemy, PostgreSQL, Pydantic |
 | Frontend | React, Vite, TypeScript, Tailwind CSS, i18next |
-| Firmware | Arduino C++ (ESP32 / ESP32-S3) |
+| Firmware | Arduino C++ (ESP32 / ESP32-S3) — starter workspace only |
 
 ## Key Innovation
 
@@ -47,13 +62,22 @@ Unmanned and poorly monitored railway crossings in India pose serious safety ris
 
 ## Current Status
 
-**Version 0.1.0 — Phase 0 Complete**
+**Version 0.1.4 — Phase E0 Embedded Foundation Complete**
 
-- Project foundation and folder structure created
-- Backend health and root API endpoints available
-- Frontend dashboard with language switcher and status cards
-- Documentation, architecture plans, and patent register initialized
-- Sensors, AI, and database **not yet integrated**
+### Software phases
+
+- Phase 0 — Project foundation complete
+- Phase S1 — Backend foundation complete
+- Phase S2 — Database foundation complete
+- Phase S3 — Identity and Access Management complete
+- Phase S4 — Planned / separate
+- Phase E0 — Embedded firmware workspace and Arduino docs complete
+
+### Embedded / hardware
+
+- Firmware folder structure and starter sketches created
+- Sensors, camera init, and device networking **not implemented**
+- Physical upload and hardware testing **not performed** (boards not received)
 
 ## Folder Structure
 
@@ -61,9 +85,14 @@ Unmanned and poorly monitored railway crossings in India pose serious safety ris
 EMBEDDED SYSTEM PROJECT/
 ├── backend/                 # FastAPI application
 ├── frontend/dashboard/      # React + Vite dashboard
-├── firmware/                # ESP32 firmware projects
+├── firmware/                # ESP32 / ESP32-S3 firmware workspace
+│   ├── common/              # Shared headers
+│   ├── esp32_sensor_controller/
+│   ├── esp32s3_ai_camera/
+│   └── examples/
 ├── hardware/                # Wiring, components, testing plans
-├── docs/                    # Progress logs, architecture, patent notes
+├── docs/                    # Progress, architecture, embedded guides
+│   └── embedded/            # Arduino IDE + firmware docs
 ├── reports/                 # Generated reports (future)
 ├── README.md
 ├── PROJECT_PLAN.md
@@ -72,7 +101,7 @@ EMBEDDED SYSTEM PROJECT/
 
 ## Day 1 Setup Note
 
-Phase 0 (23 June 2025) established the complete project skeleton. No sensor or AI features are claimed as working. Next steps: initialize Git repository, run backend and frontend locally, and begin Phase 1 backend core development.
+Phase 0 (23 June 2025) established the complete project skeleton. Phase E0 (17 July 2026) added the embedded firmware workspace. No sensor or AI features are claimed as working on hardware.
 
 ## Quick Start
 

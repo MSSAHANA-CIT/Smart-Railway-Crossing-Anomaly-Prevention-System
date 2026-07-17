@@ -47,3 +47,14 @@ htmlcov/
 # Logs
 *.log
 logs/
+
+# Firmware secrets and local device config (never commit real credentials)
+device_config.h
+secrets.h
+wifi_credentials.h
+firmware_secrets.h
+
+# Firmware build artifacts
+*.bin
+*.elf
+*.map
